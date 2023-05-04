@@ -10,7 +10,10 @@ const tasks = [];
 
 // Display tasks in UI
 const displayTasks = function () {
+  // Clear container
   taskListEl.innerHTML = "";
+
+  // Generate the HTML for each task
   tasks.forEach((task) => {
     const html = `<div class="flex items-center bg-slate-200 justify-between px-10 py-5 rounded-md w-3/4 mb-5 taskItem ">
       <div class="flex gap-3 items-center">
@@ -36,6 +39,33 @@ const displayTasks = function () {
     taskListEl.insertAdjacentHTML("beforeend", html);
   });
 
+  // Update remaining label
+  const updateRemaining = function () {
+    const remainingTasks = tasks.filter(
+      (task) => task.completed === false
+    ).length;
+    remainingEl.textContent = remainingTasks;
+  };
+
+  // Update completed label
+  const updateCompleted = function () {
+    const completedTasks = tasks.filter((task) => task.completed).length;
+    completedEl.textContent = completedTasks;
+  };
+
+  // Update total label
+  const updateTotal = function () {
+    const totalTasks = tasks.length;
+    totalEl.textContent = totalTasks;
+  };
+
+  // Update all
+  const updateLabels = function () {
+    updateRemaining();
+    updateCompleted();
+    updateTotal();
+  };
+
   // Add event listeners to task close buttons
   document.querySelectorAll(".taskClose").forEach((icon) => {
     const taskId = icon.getAttribute("data-id");
@@ -57,14 +87,19 @@ const displayTasks = function () {
         task.parentElement
           .querySelector(".taskDescription")
           .classList.add("line-through");
+        updateLabels();
       } else {
         tasks[taskIndex].completed = false;
         task.parentElement
           .querySelector(".taskDescription")
           .classList.remove("line-through");
+        updateLabels();
       }
     });
   });
+
+  // Update labeles (remaining, completed, total)
+  updateLabels();
 };
 
 displayTasks();
