@@ -12,14 +12,17 @@ const tasks = [];
 const displayTasks = function () {
   taskListEl.innerHTML = "";
   tasks.forEach((task) => {
-    const html = `<div class="flex items-center justify-between bg-slate-200 px-10 py-5 rounded-md w-3/4 mb-5">
+    const html = `<div class="flex items-center bg-slate-200 justify-between px-10 py-5 rounded-md w-3/4 mb-5 taskItem ">
       <div class="flex gap-3 items-center">
         <input
           type="checkbox"
           name="taskCheck"
           class="appearance-none w-8 h-8 rounded-full text-blue-300 focus:ring-0 taskCheckbox"
+          data-id="${task.id}"
         />
-        <p class="text-lg text-slate-900 taskDescription">${task.description}</p>
+        <p class="text-lg text-slate-900 ${
+          task.completed ? "line-through" : ""
+        } taskDescription">${task.description}</p>
       </div>
       <button>
         <ion-icon
@@ -43,6 +46,25 @@ const displayTasks = function () {
       }
     });
   });
+
+  // Add event listeners to task complete checkboxes
+  document.querySelectorAll(".taskCheckbox").forEach((task) => {
+    const taskId = task.getAttribute("data-id");
+    task.addEventListener("change", () => {
+      const taskIndex = tasks.findIndex((task) => task.id === Number(taskId));
+      if (task.checked) {
+        tasks[taskIndex].completed = true;
+        task.parentElement
+          .querySelector(".taskDescription")
+          .classList.add("line-through");
+      } else {
+        tasks[taskIndex].completed = false;
+        task.parentElement
+          .querySelector(".taskDescription")
+          .classList.remove("line-through");
+      }
+    });
+  });
 };
 
 displayTasks();
@@ -56,7 +78,7 @@ addTaskBtn.addEventListener("click", (e) => {
     const task = {
       id: Date.now(),
       description: inputTaskEl.value,
-      checked: false,
+      completed: false,
       deleteTask() {
         const taskIndex = tasks.indexOf(this);
         tasks.splice(taskIndex, 1);
